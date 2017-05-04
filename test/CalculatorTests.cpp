@@ -3,7 +3,20 @@
 
 #include "Calculator.hpp"
 
-using namespace cpp-libshorttext;
+using namespace libshorttext;
+
+SCENARIO( "Libshorttext", "[libshorttext]" ) {
+
+    GIVEN( "liblinear" ) {
+        extern int liblinear_version;
+
+        WHEN( "liblinear" ) {
+            THEN( "version" ) {
+                REQUIRE( get_liblinear_version() == 211 );
+            }
+        }
+    }
+}
 
 SCENARIO( "Calculators can calculate", "[calculator]" ) {
 

@@ -33,6 +33,7 @@ set (MAINFOLDER ${PROJECT_SOURCE_DIR})
 set (EXECUTABLE_OUTPUT_PATH "${MAINFOLDER}/bin")
 set (LIBRARY_OUTPUT_PATH "${MAINFOLDER}/lib")
 set (CATCH_DIR "${MAINFOLDER}/thirdparity/catch")
+set (LIBLINEAR_DIR "${MAINFOLDER}/thirdparity/liblinear")
 
 
 #
@@ -40,11 +41,14 @@ set (CATCH_DIR "${MAINFOLDER}/thirdparity/catch")
 #
 list (APPEND CMAKE_PREFIX_PATH "${MAINFOLDER}")
 include_directories("${MAINFOLDER}/include")
+include_directories("${LIBLINEAR_DIR}")
 
 
 #
 # Add Build Targets
 #
+add_subdirectory(thirdparity)
+
 add_subdirectory(src)
 
 enable_testing()
@@ -57,3 +61,8 @@ add_subdirectory(test)
 if (EXISTS "${MAINFOLDER}/include/${PROJECT_NAME}" AND IS_DIRECTORY "${MAINFOLDER}/include/${PROJECT_NAME}")
     install(DIRECTORY "${MAINFOLDER}/include/${PROJECT_NAME}" DESTINATION "include")
 endif (EXISTS "${MAINFOLDER}/include/${PROJECT_NAME}" AND IS_DIRECTORY "${MAINFOLDER}/include/${PROJECT_NAME}")
+
+#
+# Clean
+#
+# execute_process ( COMMAND make clean WORKING_DIRECTORY ${LIBLINEAR_DIR} )

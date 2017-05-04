@@ -1,7 +1,9 @@
 #ifndef _CALCULATOR_HPP_
 #define _CALCULATOR_HPP_
 
-namespace cpp-libshorttext {
+#include "linear.h"
+
+namespace libshorttext {
 
     class Calculator {
 
@@ -13,5 +15,8 @@ namespace cpp-libshorttext {
 
     };
 
+    int get_liblinear_version() {
+        return liblinear_version;
+    }
 }
 #endif // _CALCULATOR_HPP_

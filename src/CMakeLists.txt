@@ -9,6 +9,10 @@ if (NOT DEFINED PROJECT_BUILD_SHARED)
     endif (CMAKE_CROSSCOMPILING)
 endif (NOT DEFINED PROJECT_BUILD_SHARED)
 
+link_directories(
+    ${LIBLINEAR_DIR}
+    ${LIBLINEAR_DIR}/blas)
+
 if (NOT DEFINED PROJECT_BUILD_STATIC)
 set(PROJECT_BUILD_STATIC 1)
 endif (NOT DEFINED PROJECT_BUILD_STATIC)
@@ -23,6 +27,15 @@ endif(PROJECT_BUILD_STATIC)
 if (PROJECT_BUILD_SHARED)
     add_library(sharedlib SHARED ${PROJECT_SRCS})
     target_link_libraries(sharedlib ${PROJECT_LIBS})
+
+    target_link_libraries(sharedlib linear.o)
+    target_link_libraries(sharedlib tron.o)
+    target_link_libraries(sharedlib daxpy.o)
+    target_link_libraries(sharedlib ddot.o)
+    target_link_libraries(sharedlib dscal.o)
+    target_link_libraries(sharedlib dnrm2.o)
+
     set_target_properties(sharedlib PROPERTIES VERSION "${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}" OUTPUT_NAME ${PROJECT_BIN} CLEAN_DIRECT_OUTPUT 1)
     install(TARGETS sharedlib DESTINATION lib)
 endif(PROJECT_BUILD_SHARED)
+

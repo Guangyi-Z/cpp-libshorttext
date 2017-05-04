@@ -1,6 +1,6 @@
 #include "Calculator.hpp"
 
-namespace cpp-libshorttext {
+namespace libshorttext {
 
     int Calculator::add(int first, int second) {
         return first + second;
