@@ -14,6 +14,11 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             THEN( "version" ) {
                 REQUIRE( get_liblinear_version() == 211 );
             }
+            THEN( "train" ) {
+                char* argv[] = {"exe", "../../thirdparity/liblinear/heart_scale", "./heart_scale.model"};
+                liblinear_train(2, argv);
+                // REQUIRE( get_liblinear_version() == 211 );
+            }
         }
     }
 }
