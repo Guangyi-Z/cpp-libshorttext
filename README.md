@@ -2,6 +2,9 @@
 
 LibShortText: A Library for Short-text Classification and Analysis, in Pure C++.
 
+* Only for predicting part
+* LibShortText (Python) model files adapted
+
 ## Building From Source
 
 First make sure that you have [CMake](http://www.cmake.org/) and an C++ compiler environment installed.
@@ -19,6 +22,12 @@ After building this project you may run its unit tests by using these commands:
 
     $ make test  # To run all tests via CTest
     $ make catch # Run all tests directly, showing more details to you
+
+## Denpendency
+
+* catch
+* liblinear
+* PicklingTools
 
 ## License
 
