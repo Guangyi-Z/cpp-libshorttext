@@ -8,8 +8,6 @@ using namespace libshorttext;
 SCENARIO( "Libshorttext", "[libshorttext]" ) {
 
     GIVEN( "liblinear" ) {
-        extern int liblinear_version;
-
         WHEN( "liblinear" ) {
             THEN( "version" ) {
                 REQUIRE( get_liblinear_version() == 211 );
