@@ -6,6 +6,8 @@
 #
 cmake_minimum_required (VERSION 2.8)
 project (cpp-libshorttext)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DOC_NEW_STYLE_INCLUDES") # PicklingTools170Release required
+
 set (APPLICATION_NAME "cpp-libshorttext")
 set (APPLICATION_CODENAME "${PROJECT_NAME}")
 set (APPLICATION_COPYRIGHT_YEARS "2017")
@@ -34,6 +36,7 @@ set (EXECUTABLE_OUTPUT_PATH "${MAINFOLDER}/bin")
 set (LIBRARY_OUTPUT_PATH "${MAINFOLDER}/lib")
 set (CATCH_DIR "${MAINFOLDER}/thirdparity/catch")
 set (LIBLINEAR_DIR "${MAINFOLDER}/thirdparity/liblinear")
+set (PICKLINGTOOLS_DIR "${MAINFOLDER}/thirdparity/PicklingTools170Release/C++")
 
 
 #
@@ -42,6 +45,8 @@ set (LIBLINEAR_DIR "${MAINFOLDER}/thirdparity/liblinear")
 list (APPEND CMAKE_PREFIX_PATH "${MAINFOLDER}")
 include_directories("${MAINFOLDER}/include")
 include_directories("${LIBLINEAR_DIR}")
+include_directories("${PICKLINGTOOLS_DIR}")
+include_directories("${PICKLINGTOOLS_DIR}/opencontainers_1_8_5/include")
 
 
 #

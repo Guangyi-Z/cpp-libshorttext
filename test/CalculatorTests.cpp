@@ -19,6 +19,14 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             }
         }
     }
+
+    GIVEN( "PicklingTools" ) {
+        WHEN( "PicklingTools" ) {
+            THEN( "test" ) {
+                pickle();
+            }
+        }
+    }
 }
 
 SCENARIO( "Calculators can calculate", "[calculator]" ) {

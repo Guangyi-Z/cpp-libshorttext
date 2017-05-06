@@ -8,6 +8,8 @@
 #include <ctype.h>
 #include <errno.h>
 #include "linear.h"
+#include "chooseser.h"
+#include <unistd.h> // getcwd()
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 #define INF HUGE_VAL
@@ -23,6 +25,22 @@ namespace libshorttext {
         int divide(int first, int second);
 
     };
+
+    std::string get_working_path() {
+        const int MAXPATHLEN = 2048;
+        char temp[MAXPATHLEN];
+        return ( getcwd(temp, MAXPATHLEN) ? std::string( temp ) : std::string("") );
+    }
+
+    void pickle() {
+        std::string cwd = get_working_path();
+        std::cout << "###CWD: " << cwd << std::endl;
+
+        // Get the result back
+        Val result;
+        LoadValFromFile("../../test/stub/1.pickle", result, SERIALIZE_P0);
+        std::cout << "###1.pickle: " << result << std::endl;
+    }
 
     void print_null(const char *s) {}
 
