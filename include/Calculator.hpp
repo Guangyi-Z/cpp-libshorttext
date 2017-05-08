@@ -40,6 +40,38 @@ namespace libshorttext {
         Val result;
         LoadValFromFile("../../test/stub/1.pickle", result, SERIALIZE_P0);
         std::cout << "###1.pickle: " << result << std::endl;
+
+        // model file
+        std::string model_path = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model";
+        std::string model_learner_path = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/learner";
+
+        std::string options_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/learner/options.pickle";
+        Val options;
+        LoadValFromFile(options_file, options, SERIALIZE_P0);
+        std::cout << "### options (learner): " << options << std::endl;
+
+        std::string idf_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/learner/idf.pickle";
+        Val idf;
+        LoadValFromFile(idf_file, options, SERIALIZE_P0);
+        std::cout << "### idf (learner): " << idf << std::endl;
+
+        std::string classmap_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/converter/class_map.config.pickle";
+        Val classmap;
+        LoadValFromFile(classmap_file, classmap, SERIALIZE_P0);
+        std::cout << "### classmap (learner): " << classmap << std::endl;
+
+        std::string featgen_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/converter/feat_gen.config.pickle";
+        Val featgen;
+        LoadValFromFile(featgen_file, featgen, SERIALIZE_P0);
+        std::cout << "### featgen (learner): " << featgen << std::endl;
+
+        // this fails, and it's the problem of PicklingTools
+        /*
+        std::string textprep_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/converter/text_prep.config.pickle";
+        Val textprep;
+        LoadValFromFile(textprep_file, textprep, SERIALIZE_P0);
+        std::cout << "### textprep (learner): " << textprep << std::endl;
+        */
     }
 
     void print_null(const char *s) {}

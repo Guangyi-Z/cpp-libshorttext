@@ -26,8 +26,16 @@ After building this project you may run its unit tests by using these commands:
 ## Denpendency
 
 * catch
-* liblinear
-* PicklingTools
+* [liblinear](https://github.com/cjlin1/liblinear)
+
+## Missing
+
+* Ignoring extra file in model file: `converter/extra_file_ids.pickle` and `converter/extra_nr_feats.pickle`
+
+## Trial and Error
+
+* [TextGrocery for better understanding of LibShortText](https://github.com/2shou/TextGrocery)
+* [PicklingTools not work](https://github.com/pyloor/picklingtools/issues/4)
 
 ## License
 
