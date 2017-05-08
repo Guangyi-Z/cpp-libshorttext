@@ -1,0 +1,9 @@
+**/*.o
+**/*.a
+**/*.so
+**/*.so.*
+**/*.pickle
+
+build/
+lib/
+bin/
