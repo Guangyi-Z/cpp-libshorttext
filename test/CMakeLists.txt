@@ -3,10 +3,11 @@ set (TEST_BIN ${PROJECT_NAME}_test)
 set (TEST_LIBS ${PROJECT_NAME})
 
 # configure the executable
-link_directories(${MAINFOLDER}/lib ${LIBLINEAR_DIR} ${PICKLINGTOOLS_DIR})
+link_directories(${MAINFOLDER}/lib ${LIBLINEAR_DIR})
 include_directories("${CATCH_DIR}/include")
 add_executable(${TEST_BIN} ${TEST_SRC})
-target_link_libraries(${TEST_BIN} liblinear.so.3 pthread libptools.so ${TEST_LIBS})
+
+target_link_libraries(${TEST_BIN} liblinear.so.3 ${TEST_LIBS})
 
 # configure unit tests via CTest
 add_test(NAME AllTests COMMAND ${TEST_BIN})

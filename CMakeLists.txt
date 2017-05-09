@@ -36,7 +36,6 @@ set (EXECUTABLE_OUTPUT_PATH "${MAINFOLDER}/bin")
 set (LIBRARY_OUTPUT_PATH "${MAINFOLDER}/lib")
 set (CATCH_DIR "${MAINFOLDER}/thirdparity/catch")
 set (LIBLINEAR_DIR "${MAINFOLDER}/thirdparity/liblinear")
-set (PICKLINGTOOLS_DIR "${MAINFOLDER}/thirdparity/PicklingTools170Release/C++")
 
 
 #
@@ -45,8 +44,6 @@ set (PICKLINGTOOLS_DIR "${MAINFOLDER}/thirdparity/PicklingTools170Release/C++")
 list (APPEND CMAKE_PREFIX_PATH "${MAINFOLDER}")
 include_directories("${MAINFOLDER}/include")
 include_directories("${LIBLINEAR_DIR}")
-include_directories("${PICKLINGTOOLS_DIR}")
-include_directories("${PICKLINGTOOLS_DIR}/opencontainers_1_8_5/include")
 
 
 #

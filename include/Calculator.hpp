@@ -8,70 +8,32 @@
 #include <ctype.h>
 #include <errno.h>
 #include "linear.h"
-#include "chooseser.h"
 #include <unistd.h> // getcwd()
+#include <iostream>
+#include <fstream>
+#include <vector>
 
 #define Malloc(type,n) (type *)malloc((n)*sizeof(type))
 #define INF HUGE_VAL
 
 namespace libshorttext {
 
-    class Calculator {
+    void read_model(std::string model_path) {
+        std::string classmap_path = model_path + "/class_map.txt";
+        std::string featgen_path = model_path + "/feat_gen.txt";
+        std::string options_path = model_path + "/options.txt";
+        std::string textprep_path = model_path + "/text_prep.txt";
 
-    public:
-        int add(int first, int second);
-        int substract(int first, int second);
-        int multiply(int first, int second);
-        int divide(int first, int second);
-
-    };
-
-    std::string get_working_path() {
-        const int MAXPATHLEN = 2048;
-        char temp[MAXPATHLEN];
-        return ( getcwd(temp, MAXPATHLEN) ? std::string( temp ) : std::string("") );
-    }
-
-    void pickle() {
-        std::string cwd = get_working_path();
-        std::cout << "###CWD: " << cwd << std::endl;
-
-        // Get the result back
-        Val result;
-        LoadValFromFile("../../test/stub/1.pickle", result, SERIALIZE_P0);
-        std::cout << "###1.pickle: " << result << std::endl;
-
-        // model file
-        std::string model_path = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model";
-        std::string model_learner_path = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/learner";
-
-        std::string options_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/learner/options.pickle";
-        Val options;
-        LoadValFromFile(options_file, options, SERIALIZE_P0);
-        std::cout << "### options (learner): " << options << std::endl;
-
-        std::string idf_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/learner/idf.pickle";
-        Val idf;
-        LoadValFromFile(idf_file, options, SERIALIZE_P0);
-        std::cout << "### idf (learner): " << idf << std::endl;
-
-        std::string classmap_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/converter/class_map.config.pickle";
-        Val classmap;
-        LoadValFromFile(classmap_file, classmap, SERIALIZE_P0);
-        std::cout << "### classmap (learner): " << classmap << std::endl;
-
-        std::string featgen_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/converter/feat_gen.config.pickle";
-        Val featgen;
-        LoadValFromFile(featgen_file, featgen, SERIALIZE_P0);
-        std::cout << "### featgen (learner): " << featgen << std::endl;
-
-        // this fails, and it's the problem of PicklingTools
-        /*
-        std::string textprep_file = "/home/janfan/share/janfan/Code/nlp/libshorttext-1.1/demo/train_file.model/converter/text_prep.config.pickle";
-        Val textprep;
-        LoadValFromFile(textprep_file, textprep, SERIALIZE_P0);
-        std::cout << "### textprep (learner): " << textprep << std::endl;
-        */
+        std::ifstream textprep_ifs(textprep_path.c_str());
+        std::string token;
+        std::vector<std::string> tok2idx;
+        while (std::getline(textprep_ifs, token)) {
+             tok2idx.push_back(token);
+        }
+        // for(std::vector<std::string>::iterator it = tok2idx.begin(); it != tok2idx.end(); ++it) {
+        for(std::vector<std::string>::iterator it = tok2idx.begin(); it != tok2idx.begin() + 10; ++it) {
+            std::cout << *it << std::endl;
+        }
     }
 
     void print_null(const char *s) {}

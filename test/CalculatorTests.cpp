@@ -1,10 +1,16 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
 
-#include "chooseser.h"
 #include "Calculator.hpp"
+#include <unistd.h> // getcwd()
 
 using namespace libshorttext;
+
+std::string get_working_path() {
+    const int MAXPATHLEN_ = 2048;
+    char temp[MAXPATHLEN_];
+    return ( getcwd(temp, MAXPATHLEN_) ? std::string( temp ) : std::string("") );
+}
 
 SCENARIO( "Libshorttext", "[libshorttext]" ) {
 
@@ -18,49 +24,9 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 liblinear_train(2, argv);
                 // REQUIRE( get_liblinear_version() == 211 );
             }
-        }
-    }
-
-    GIVEN( "PicklingTools" ) {
-        WHEN( "PicklingTools" ) {
-            THEN( "test" ) {
-                pickle();
-            }
-            THEN( "Val" ) {
-                Val a = "english test";
-                Val b = "中文测试";
-            }
-        }
-    }
-}
-
-SCENARIO( "Calculators can calculate", "[calculator]" ) {
-
-    GIVEN( "A brand new calculator" ) {
-        Calculator calc;
-
-        WHEN( "adding two numbers" ) {
-            THEN( "the result should be the sum of both numbers" ) {
-                REQUIRE( calc.add(1,1) == 2 );
-                REQUIRE( calc.add(123,321) == 444 );
-            }
-        }
-        WHEN( "substracting two numbers" ) {
-            THEN( "the result should be the difference between both numbers" ) {
-                REQUIRE( calc.substract(1,1) == 0 );
-                REQUIRE( calc.substract(321,123) == 198 );
-            }
-        }
-        WHEN( "multiplying two numbers" ) {
-            THEN( "the result should be the product of both numbers" ) {
-                REQUIRE( calc.multiply(1,1) == 1 );
-                REQUIRE( calc.multiply(3,123) == 369 );
-            }
-        }
-        WHEN( "dividing two numbers" ) {
-            THEN( "the result should be the fraction of both numbers" ) {
-                REQUIRE( calc.divide(1,1) == 1 );
-                REQUIRE( calc.divide(369,3) == 123 );
+            THEN( "load model" ) {
+                std::string model_path = "../../test/stub/train_file.model_converted";
+                read_model(model_path);
             }
         }
     }

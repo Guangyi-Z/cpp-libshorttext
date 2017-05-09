@@ -21,10 +21,10 @@ if (PROJECT_BUILD_STATIC)
 endif(PROJECT_BUILD_STATIC)
 
 if (PROJECT_BUILD_SHARED)
-    link_directories(${LIBLINEAR_DIR} ${PICKLINGTOOLS_DIR})
+    link_directories(${LIBLINEAR_DIR})
     add_library(sharedlib SHARED ${PROJECT_SRCS})
 
-    target_link_libraries(sharedlib ${PROJECT_LIBS} liblinear.so.3 libptools.so pthread)
+    target_link_libraries(sharedlib ${PROJECT_LIBS} liblinear.so.3)
 
     set_target_properties(sharedlib PROPERTIES VERSION "${APPLICATION_VERSION_MAJOR}.${APPLICATION_VERSION_MINOR}" OUTPUT_NAME ${PROJECT_BIN} CLEAN_DIRECT_OUTPUT 1)
     install(TARGETS sharedlib DESTINATION lib)
