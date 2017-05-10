@@ -85,18 +85,19 @@ namespace libshorttext {
         return id;
     }
 
-    std::map<std::string,int> tok2feat(std::vector<int> tokens)
+    std::map<int,int> tok2feat(std::vector<int> tokens)
     {
-        std::map<std::string,int> feat;
+        std::map<int,int> feat;
         // unigram
         for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
             std::string ft = NUM_TO_STR(*it);
             if (feat2idx.end() != feat2idx.find(ft)) {
-                if (feat.end() != feat.find(ft)) {
-                    feat[ft] ++;
+                int id = feat2idx[ft];
+                if (feat.end() != feat.find(id)) {
+                    feat[id] ++;
                 }
                 else {
-                    feat[ft] = 1;
+                    feat[id] = 1;
                 }
             }
         }
@@ -105,11 +106,12 @@ namespace libshorttext {
             if (it+1 >= tokens.end()) break;
             std::string ft = bigram(*it, *(it+1));
             if (feat2idx.end() != feat2idx.find(ft)) {
-                if (feat.end() != feat.find(ft)) {
-                    feat[ft] ++;
+                int id = feat2idx[ft];
+                if (feat.end() != feat.find(id)) {
+                    feat[id] ++;
                 }
                 else {
-                    feat[ft] = 1;
+                    feat[id] = 1;
                 }
             }
         }
