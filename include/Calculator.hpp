@@ -24,6 +24,11 @@ namespace libshorttext {
         return liblinear_version;
     }
 
+    std::string bigram(int l, int r)
+    {
+        return NUM_TO_STR(l) + "," + NUM_TO_STR(r);
+    }
+
     std::vector<std::string> idx2tok;
     std::map<std::string,int> tok2idx;
     std::map<std::string, int> feat2idx;
@@ -49,13 +54,10 @@ namespace libshorttext {
             std::string::size_type idx = ngram.find('\t');
             if (idx != std::string::npos) {
                 // bigram
-                std::string bigram("");
                 std::stringstream ss(ngram);
-                int id;
-                while(ss >> id) {
-                    bigram += "," + NUM_TO_STR(id);
-                }
-                feat2idx[bigram.substr(1)] = idx2feat;
+                int l,r;
+                ss >> l >> r;
+                feat2idx[bigram(l,r)] = idx2feat;
             }
             else {
                 // unigram
@@ -77,10 +79,42 @@ namespace libshorttext {
                 id.push_back(tok2idx[item]);
             }
             // todo
-            // ignore unseen token in test
+            // ignore unseen token in train
 		}
 
         return id;
+    }
+
+    std::map<std::string,int> tok2feat(std::vector<int> tokens)
+    {
+        std::map<std::string,int> feat;
+        // unigram
+        for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+            std::string ft = NUM_TO_STR(*it);
+            if (feat2idx.end() != feat2idx.find(ft)) {
+                if (feat.end() != feat.find(ft)) {
+                    feat[ft] ++;
+                }
+                else {
+                    feat[ft] = 1;
+                }
+            }
+        }
+        // bigram
+        for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+            if (it+1 >= tokens.end()) break;
+            std::string ft = bigram(*it, *(it+1));
+            if (feat2idx.end() != feat2idx.find(ft)) {
+                if (feat.end() != feat.find(ft)) {
+                    feat[ft] ++;
+                }
+                else {
+                    feat[ft] = 1;
+                }
+            }
+        }
+
+        return feat;
     }
 
     struct model* model_;

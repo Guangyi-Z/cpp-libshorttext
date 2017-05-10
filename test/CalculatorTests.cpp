@@ -36,12 +36,16 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                     output_ofs << *it << std::endl;
                 }
             }
-            THEN( "tokenize" ) {
+            THEN( "load model" ) {
                 std::string model_path = "../../test/stub/train_file.model_converted";
                 read_model(model_path);
 
                 REQUIRE( tok2idx[">>dummy<<"] == 0 );
+                REQUIRE( tok2idx["calgary"] == 1 );
+                REQUIRE( tok2idx["rawlins"] == 11069 );
                 REQUIRE( feat2idx[">>dummy<<"] == 0 );
+                REQUIRE( feat2idx["1"] == 1 );
+                REQUIRE( feat2idx["3877,11069"] == 47244 );
 
                 // for (std::map<std::string,int>::iterator it=feat2idx.begin(); it!=feat2idx.end(); ++it) {
                 //     std::cout << it->first << " => " << it->second << std::endl;
@@ -55,6 +59,11 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                     std::cout << *it << std::endl;
                 }
                 std::cout << "### count: " << tokens.size() << std::endl;
+
+                std::map<std::string,int> feats = tok2feat(tokens);
+                for(std::map<std::string,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
+                    std::cout << it->first << " => " << it->second << std::endl;
+                }
             }
         }
     }
