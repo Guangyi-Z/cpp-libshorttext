@@ -40,19 +40,21 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 std::string model_path = "../../test/stub/train_file.model_converted";
                 read_model(model_path);
 
+                REQUIRE( tok2idx[">>dummy<<"] == 0 );
+                REQUIRE( feat2idx[">>dummy<<"] == 0 );
+
+                // for (std::map<std::string,int>::iterator it=feat2idx.begin(); it!=feat2idx.end(); ++it) {
+                //     std::cout << it->first << " => " << it->second << std::endl;
+                // }
+
                 // std::string text = "Jewelry & Watches	multicolor inlay sterling silver post earrings jewelry";
                 std::string text = "multicolor inlay sterling silver post earrings jewelry";
                 char sep = ' ';
                 std::vector<int> tokens = text2tok(text, sep);
-
                 for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
                     std::cout << *it << std::endl;
                 }
                 std::cout << "### count: " << tokens.size() << std::endl;
-            }
-            THEN( "load model" ) {
-                std::string model_path = "../../test/stub/train_file.model_converted";
-                read_model(model_path);
             }
         }
     }

@@ -43,10 +43,13 @@ if __name__ == '__main__':
 
     fidx2ngram = pk_load(os.path.join(model_path, 'converter/feat_gen.config.pickle'))
     with open(os.path.join(model_path2, 'feat_gen.txt'), 'w') as fout:
+        start = True
         for ngram in fidx2ngram['fidx2ngram']:
-            for n in ngram:
-                fout.write(str(n) + '\t')
-            fout.write('\n')
+            if start:
+                fout.write('{0}\n'.format(ngram))
+                start = False
+            else:
+                fout.write('{0}\n'.format('\t'.join(map(lambda x: str(x), ngram))))
 
     idx2class = pk_load(os.path.join(model_path, 'converter/class_map.config.pickle'))
     with open(os.path.join(model_path2, 'class_map.txt'), 'w') as fout:

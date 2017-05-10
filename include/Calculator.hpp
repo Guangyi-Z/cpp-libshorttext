@@ -14,6 +14,10 @@
 #include <vector>
 #include <map>
 
+#define NUM_TO_STR( x ) static_cast< std::ostringstream & >( \
+    ( std::ostringstream() << std::dec << x ) ).str()
+
+
 namespace libshorttext {
 
     int get_liblinear_version() {
@@ -22,6 +26,7 @@ namespace libshorttext {
 
     std::vector<std::string> idx2tok;
     std::map<std::string,int> tok2idx;
+    std::map<std::string, int> feat2idx;
     void read_model(std::string model_path) {
         std::string classmap_path = model_path + "/class_map.txt";
         std::string featgen_path = model_path + "/feat_gen.txt";
@@ -36,12 +41,34 @@ namespace libshorttext {
         for(std::vector<std::string>::iterator it = idx2tok.begin(); it != idx2tok.end(); ++it) {
             tok2idx[*it] = it - idx2tok.begin();
         }
+
+        std::ifstream featgen_ifs(featgen_path.c_str());
+        std::string ngram;
+        int idx2feat = 0;
+        while (std::getline(featgen_ifs, ngram)) {
+            std::string::size_type idx = ngram.find('\t');
+            if (idx != std::string::npos) {
+                // bigram
+                std::string bigram("");
+                std::stringstream ss(ngram);
+                int id;
+                while(ss >> id) {
+                    bigram += "," + NUM_TO_STR(id);
+                }
+                feat2idx[bigram.substr(1)] = idx2feat;
+            }
+            else {
+                // unigram
+                feat2idx[NUM_TO_STR(ngram)] = idx2feat;
+            }
+
+            idx2feat ++;
+        }
     }
 
     std::vector<int> text2tok(std::string text, char sep)
     {
         std::vector<int> id;
-
 		std::stringstream ss;
 		ss.str(text);
 		std::string item;
@@ -49,6 +76,8 @@ namespace libshorttext {
             if (tok2idx.end() != tok2idx.find(item)) {
                 id.push_back(tok2idx[item]);
             }
+            // todo
+            // ignore unseen token in test
 		}
 
         return id;
