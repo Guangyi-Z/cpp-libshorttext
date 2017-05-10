@@ -19,10 +19,8 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             THEN( "version" ) {
                 REQUIRE( get_liblinear_version() == 211 );
             }
-            THEN( "train" ) {
-                char* argv[] = {"exe", "../../thirdparity/liblinear/heart_scale", "./heart_scale.model"};
-                liblinear_train(2, argv);
-                // REQUIRE( get_liblinear_version() == 211 );
+            THEN( "predict" ) {
+                liblinear_predict("../../test/stub/test_file.svm", "../../test/stub/train_file.model/learner/liblinear_model", "../../test/stub/predict_result");
             }
             THEN( "load model" ) {
                 std::string model_path = "../../test/stub/train_file.model_converted";
