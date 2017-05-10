@@ -10,7 +10,9 @@
 #include "linear.h"
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
+#include <map>
 
 namespace libshorttext {
 
@@ -18,6 +20,8 @@ namespace libshorttext {
         return liblinear_version;
     }
 
+    std::vector<std::string> idx2tok;
+    std::map<std::string,int> tok2idx;
     void read_model(std::string model_path) {
         std::string classmap_path = model_path + "/class_map.txt";
         std::string featgen_path = model_path + "/feat_gen.txt";
@@ -26,14 +30,28 @@ namespace libshorttext {
 
         std::ifstream textprep_ifs(textprep_path.c_str());
         std::string token;
-        std::vector<std::string> tok2idx;
         while (std::getline(textprep_ifs, token)) {
-             tok2idx.push_back(token);
+             idx2tok.push_back(token);
         }
-        // for(std::vector<std::string>::iterator it = tok2idx.begin(); it != tok2idx.end(); ++it) {
-        for(std::vector<std::string>::iterator it = tok2idx.begin(); it != tok2idx.begin() + 10; ++it) {
-            std::cout << *it << std::endl;
+        for(std::vector<std::string>::iterator it = idx2tok.begin(); it != idx2tok.end(); ++it) {
+            tok2idx[*it] = it - idx2tok.begin();
         }
+    }
+
+    std::vector<int> text2tok(std::string text, char sep)
+    {
+        std::vector<int> id;
+
+		std::stringstream ss;
+		ss.str(text);
+		std::string item;
+		while (std::getline(ss, item, sep)) {
+            if (tok2idx.end() != tok2idx.find(item)) {
+                id.push_back(tok2idx[item]);
+            }
+		}
+
+        return id;
     }
 
     struct model* model_;

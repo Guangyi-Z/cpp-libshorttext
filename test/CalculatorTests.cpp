@@ -36,6 +36,20 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                     output_ofs << *it << std::endl;
                 }
             }
+            THEN( "tokenize" ) {
+                std::string model_path = "../../test/stub/train_file.model_converted";
+                read_model(model_path);
+
+                // std::string text = "Jewelry & Watches	multicolor inlay sterling silver post earrings jewelry";
+                std::string text = "multicolor inlay sterling silver post earrings jewelry";
+                char sep = ' ';
+                std::vector<int> tokens = text2tok(text, sep);
+
+                for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+                    std::cout << *it << std::endl;
+                }
+                std::cout << "### count: " << tokens.size() << std::endl;
+            }
             THEN( "load model" ) {
                 std::string model_path = "../../test/stub/train_file.model_converted";
                 read_model(model_path);
