@@ -20,7 +20,21 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 REQUIRE( get_liblinear_version() == 211 );
             }
             THEN( "predict" ) {
-                liblinear_predict("../../test/stub/test_file.svm", "../../test/stub/train_file.model/learner/liblinear_model", "../../test/stub/predict_result");
+                liblinear_load_model("../../test/stub/train_file.model/learner/liblinear_model");
+
+                std::ifstream test_ifs("../../test/stub/test_file.svm");
+                std::string line;
+                std::vector<double> py;
+                while (std::getline(test_ifs, line)) {
+                    py.push_back(liblinear_predict(line));
+                }
+
+                liblinear_destroy_model();
+
+                std::ofstream output_ofs("../../test/stub/predict_result");
+                for(std::vector<double>::iterator it = py.begin(); it != py.end(); ++it) {
+                    output_ofs << *it << std::endl;
+                }
             }
             THEN( "load model" ) {
                 std::string model_path = "../../test/stub/train_file.model_converted";
