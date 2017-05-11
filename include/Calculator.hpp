@@ -14,6 +14,7 @@
 #include <vector>
 #include <map>
 #include <float.h>
+#include <cmath>
 
 #define NUM_TO_STR( x ) static_cast< std::ostringstream & >( \
     ( std::ostringstream() << std::dec << x ) ).str()
@@ -23,7 +24,7 @@ namespace libshorttext {
 
     struct model* model_;
     std::string learner_ops, liblinear_ops;
-    int is_bigram = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
+    int is_binary = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
     struct feature_node *x = NULL;
     int max_nr_attr = 64;
 
@@ -60,7 +61,7 @@ namespace libshorttext {
             switch(op[1])
             {
                 case 'D':
-                    is_bigram = val;
+                    is_binary = val;
                     break;
                 case 'T':
                     is_tf = val;
@@ -81,8 +82,8 @@ namespace libshorttext {
     void read_model(std::string model_path) {
         std::string classmap_path = model_path + "/class_map.txt";
         std::string featgen_path = model_path + "/feat_gen.txt";
-        std::string options_path = model_path + "/options.txt";
         std::string textprep_path = model_path + "/text_prep.txt";
+        std::string options_path = model_path + "/options.txt";
 
         std::ifstream options_ifs(options_path.c_str());
         std::getline(options_ifs, learner_ops);
@@ -185,6 +186,73 @@ namespace libshorttext {
         return feat;
     }
 
+    // void normalize(struct feature_node* x, int binary, int norm, int tf, int idf, double* idf_val)
+    void normalize(struct feature_node* x)
+    {
+        struct feature_node* xi;
+
+        if (is_binary) {
+            xi = x;
+            while(xi->index != -1)
+            {
+                xi->value = xi->value != 0;
+                ++xi;
+            }
+        }
+
+        if(is_tf)
+        {
+            double norm = 0;
+            xi = x;
+            while(xi->index != -1)
+            {
+                norm += xi->value;
+                ++xi;
+            }
+
+            xi = x;
+            if(norm != 0)
+                while(xi->index != -1)
+                {
+                    xi->value /= norm;
+                    ++xi;
+                }
+        }
+
+        /*todo
+        if(is_tfidf)
+        {
+            xi = x;
+            while(xi->index != -1)
+            {
+                xi->value *= idf_val[xi->index-1];
+                ++xi;
+            }
+        }
+        */
+
+        if(is_norm2)
+        {
+            double norm = 0;
+            xi = x;
+            while(xi->index != -1)
+            {
+                norm += xi->value * xi->value;
+                ++xi;
+            }
+
+            norm = sqrt(norm);
+
+            xi = x;
+            if(norm != 0)
+                while(xi->index != -1)
+                {
+                    xi->value /= norm;
+                    ++xi;
+                }
+        }
+    }
+
     struct feature_node* feat2node(std::map<int,int> feats)
     {
         if (!x) {
@@ -226,6 +294,8 @@ namespace libshorttext {
 		}
 		x[i].index = -1;
 
+        normalize(x);
+
         return x;
     }
 
@@ -252,7 +322,7 @@ namespace libshorttext {
     }
     void liblinear_destroy_model()
     {
-        destroy_param(&(model_->param));
+        // destroy_param(&(model_->param));
 	    free_and_destroy_model(&model_);
         if (x) {
 	        free(x);
