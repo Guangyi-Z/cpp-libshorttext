@@ -13,6 +13,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <float.h>
 
 #define NUM_TO_STR( x ) static_cast< std::ostringstream & >( \
     ( std::ostringstream() << std::dec << x ) ).str()
@@ -21,8 +22,14 @@
 namespace libshorttext {
 
     struct model* model_;
+    std::string learner_ops, liblinear_ops;
+    int is_bigram = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
     struct feature_node *x = NULL;
     int max_nr_attr = 64;
+
+    std::vector<std::string> idx2cls;
+    std::map<std::string,int> tok2idx;
+    std::map<std::string, int> feat2idx;
 
     int get_liblinear_version() {
         return liblinear_version;
@@ -33,22 +40,67 @@ namespace libshorttext {
         return NUM_TO_STR(l) + "," + NUM_TO_STR(r);
     }
 
-    std::vector<std::string> idx2tok;
-    std::map<std::string,int> tok2idx;
-    std::map<std::string, int> feat2idx;
+    void clear_model() {
+        idx2cls.clear();
+        tok2idx.clear();
+        feat2idx.clear();
+    }
+
+    void parse_options(std::string ops)
+    {
+        std::stringstream ss(ops);
+        std::string op;
+        int val;
+        while(ss >> op >> val) {
+            std::cout << op + " " << val << std::endl;
+            if(op[0] != '-') {
+                fprintf(stderr,"unknown option: -%s\n", op.c_str());
+                exit(1);
+            }
+            switch(op[1])
+            {
+                case 'D':
+                    is_bigram = val;
+                    break;
+                case 'T':
+                    is_tf = val;
+                    break;
+                case 'I':
+                    is_tfidf = val;
+                    break;
+                case 'N':
+                    is_norm2 = val;
+                    break;
+                default:
+                    fprintf(stderr,"unknown option: -%c\n", op[1]);
+                    exit(1);
+            }
+        }
+    }
+
     void read_model(std::string model_path) {
         std::string classmap_path = model_path + "/class_map.txt";
         std::string featgen_path = model_path + "/feat_gen.txt";
         std::string options_path = model_path + "/options.txt";
         std::string textprep_path = model_path + "/text_prep.txt";
 
+        std::ifstream options_ifs(options_path.c_str());
+        std::getline(options_ifs, learner_ops);
+        std::getline(options_ifs, liblinear_ops);
+        std::cout<< "options: " << learner_ops+"; "+liblinear_ops << std::endl;
+        parse_options(learner_ops);
+
+        std::ifstream classmap_ifs(classmap_path.c_str());
+        std::string cls;
+        while (std::getline(classmap_ifs, cls)) {
+            idx2cls.push_back(cls);
+        }
+
         std::ifstream textprep_ifs(textprep_path.c_str());
         std::string token;
+        int idx2tok = 0;
         while (std::getline(textprep_ifs, token)) {
-             idx2tok.push_back(token);
-        }
-        for(std::vector<std::string>::iterator it = idx2tok.begin(); it != idx2tok.end(); ++it) {
-            tok2idx[*it] = it - idx2tok.begin();
+            tok2idx[token] = idx2tok ++;
         }
 
         std::ifstream featgen_ifs(featgen_path.c_str());
@@ -184,23 +236,37 @@ namespace libshorttext {
             fprintf(stderr,"can't open model file %s\n",model_file.c_str());
             exit(1);
         }
+
+		// model_->param.solver_type = L2R_L2LOSS_SVC_DUAL
+		// model_->param.eps = DBL_MAX;
+		// model_->param.C = 1
+		// model_->param.p = 0.1
+		// model_->param.nr_weight = 0
+		// model_->param.weight_label = (int*) Malloc(int, 1);
+		// model_->param.weight = (double*) Malloc(double, 1);
+
+		// model_->param.bias = -1
+		// model_->param.cross_validation = False
+		// model_->param.nr_fold = 0
+		// model_->param.print_func = NULL;
     }
     void liblinear_destroy_model()
     {
+        destroy_param(&(model_->param));
 	    free_and_destroy_model(&model_);
         if (x) {
 	        free(x);
         }
     }
 
-	double liblinear_predict(std::vector<std::string> tokens)
+    std::string liblinear_predict(std::vector<std::string> tokens)
     {
 		double predict_label;
         std::vector<int> tokidxs = tok2index(tokens);
         std::map<int,int> feats = tok2feat(tokidxs);
         predict_label = predict(model_, feat2node(feats));
 
-        return predict_label;
+        return idx2cls[predict_label];
     }
 }
 #endif // _CALCULATOR_HPP_

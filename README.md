@@ -31,6 +31,7 @@ After building this project you may run its unit tests by using these commands:
 ## Missing
 
 * Ignoring extra file in model file: `converter/extra_file_ids.pickle` and `converter/extra_nr_feats.pickle`
+* Ignoring `-P`, `-G` options in LibShortText
 
 ## Trial and Error
 
