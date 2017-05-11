@@ -20,6 +20,10 @@
 
 namespace libshorttext {
 
+    struct model* model_;
+    struct feature_node *x = NULL;
+    int max_nr_attr = 64;
+
     int get_liblinear_version() {
         return liblinear_version;
     }
@@ -119,9 +123,49 @@ namespace libshorttext {
         return feat;
     }
 
-    struct model* model_;
-    struct feature_node *x = NULL;
-    int max_nr_attr = 64;
+    struct feature_node* feat2node(std::map<int,int> feats)
+    {
+        if (!x) {
+            x = (struct feature_node *) malloc(max_nr_attr*sizeof(struct feature_node));
+        }
+
+        int nr_class=get_nr_class(model_);
+        int j, n;
+        int nr_feature=get_nr_feature(model_);
+        if(model_->bias>=0)
+            n=nr_feature+1;
+        else
+            n=nr_feature;
+
+        int i = 0;
+		double target_label;
+		char *idx, *val, *label, *endptr;
+		int inst_max_index = 0; // strtol gives 0 if wrong format
+
+        for(std::map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
+			if(i>=max_nr_attr-2)	// need one more for index = -1
+			{
+				max_nr_attr *= 2;
+				x = (struct feature_node *) realloc(x,max_nr_attr*sizeof(struct feature_node));
+			}
+			x[i].index = it->first;
+			x[i].value = it->second;
+
+			// feature indices larger than those in training are not used
+			if(x[i].index <= nr_feature)
+                i++;
+		}
+
+		if(model_->bias>=0)
+		{
+			x[i].index = n;
+			x[i].value = model_->bias;
+			i++;
+		}
+		x[i].index = -1;
+
+        return x;
+    }
 
     void liblinear_load_model(std::string model_file)
     {
@@ -139,78 +183,13 @@ namespace libshorttext {
         }
     }
 
-    struct feature_node* liblinear_svm2feat(const char* line)
-    {
-        if (!x) {
-            x = (struct feature_node *) malloc(max_nr_attr*sizeof(struct feature_node));
-        }
-
-        int nr_class=get_nr_class(model_);
-        int j, n;
-        int nr_feature=get_nr_feature(model_);
-        if(model_->bias>=0)
-            n=nr_feature+1;
-        else
-            n=nr_feature;
-
-		int i = 0;
-		double target_label;
-		char *idx, *val, *label, *endptr;
-		int inst_max_index = 0; // strtol gives 0 if wrong format
-
-		label = strtok((char *)line," \t\n");
-		if(label == NULL) // empty line
-	        fprintf(stderr,"Wrong input format\n");
-
-		target_label = strtod(label,&endptr);
-		if(endptr == label || *endptr != '\0')
-	        fprintf(stderr,"Wrong input format\n");
-
-		while(1)
-		{
-			if(i>=max_nr_attr-2)	// need one more for index = -1
-			{
-				max_nr_attr *= 2;
-				x = (struct feature_node *) realloc(x,max_nr_attr*sizeof(struct feature_node));
-			}
-
-			idx = strtok(NULL,":");
-			val = strtok(NULL," \t");
-
-			if(val == NULL)
-				break;
-			errno = 0;
-			x[i].index = (int) strtol(idx,&endptr,10);
-			if(endptr == idx || errno != 0 || *endptr != '\0' || x[i].index <= inst_max_index)
-	            fprintf(stderr,"Wrong input format\n");
-			else
-				inst_max_index = x[i].index;
-
-			errno = 0;
-			x[i].value = strtod(val,&endptr);
-			if(endptr == val || errno != 0 || (*endptr != '\0' && !isspace(*endptr)))
-	            fprintf(stderr,"Wrong input format\n");
-
-			// feature indices larger than those in training are not used
-			if(x[i].index <= nr_feature)
-				++i;
-		}
-
-		if(model_->bias>=0)
-		{
-			x[i].index = n;
-			x[i].value = model_->bias;
-			i++;
-		}
-		x[i].index = -1;
-
-        return x;
-    }
-
-	double liblinear_predict(std::string text)
+	double liblinear_predict(std::string text, char sep)
     {
 		double predict_label;
-        predict_label = predict(model_, liblinear_svm2feat(text.c_str()));
+        // predict_label = predict(model_, liblinear_svm2feat(text.c_str()));
+        std::vector<int> tokens = text2tok(text, sep);
+        std::map<int,int> feats = tok2feat(tokens);
+        predict_label = predict(model_, feat2node(feats));
 
         return predict_label;
     }

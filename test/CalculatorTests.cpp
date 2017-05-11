@@ -20,23 +20,7 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 REQUIRE( get_liblinear_version() == 211 );
             }
             THEN( "predict" ) {
-                liblinear_load_model("../../test/stub/train_file.model/learner/liblinear_model");
-
-                std::ifstream test_ifs("../../test/stub/test_file.svm");
-                std::string line;
-                std::vector<double> py;
-                while (std::getline(test_ifs, line)) {
-                    py.push_back(liblinear_predict(line));
-                }
-
-                liblinear_destroy_model();
-
-                std::ofstream output_ofs("../../test/stub/predict_result");
-                for(std::vector<double>::iterator it = py.begin(); it != py.end(); ++it) {
-                    output_ofs << *it << std::endl;
-                }
-            }
-            THEN( "load model" ) {
+                // load model and propressing
                 std::string model_path = "../../test/stub/train_file.model_converted";
                 read_model(model_path);
 
@@ -47,10 +31,6 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 REQUIRE( feat2idx["1"] == 1 );
                 REQUIRE( feat2idx["3877,11069"] == 47244 );
 
-                // for (std::map<std::string,int>::iterator it=feat2idx.begin(); it!=feat2idx.end(); ++it) {
-                //     std::cout << it->first << " => " << it->second << std::endl;
-                // }
-
                 // std::string text = "Jewelry & Watches	multicolor inlay sterling silver post earrings jewelry";
                 std::string text = "multicolor inlay sterling silver post earrings jewelry";
                 char sep = ' ';
@@ -58,11 +38,30 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
                     std::cout << *it << std::endl;
                 }
-                std::cout << "### count: " << tokens.size() << std::endl;
 
-                std::map<std::string,int> feats = tok2feat(tokens);
-                for(std::map<std::string,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
+                std::map<int,int> feats = tok2feat(tokens);
+                for(std::map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
                     std::cout << it->first << " => " << it->second << std::endl;
+                }
+
+
+                // liblinear
+                liblinear_load_model("../../test/stub/train_file.model/learner/liblinear_model");
+
+                // std::ifstream test_ifs("../../test/stub/test_file.svm");
+                std::ifstream test_ifs("../../test/stub/test_file.text");
+                std::string line;
+                std::vector<double> py;
+                sep = ' ';
+                while (std::getline(test_ifs, line)) {
+                    py.push_back(liblinear_predict(line, sep));
+                }
+
+                liblinear_destroy_model();
+
+                std::ofstream output_ofs("../../test/stub/predict_result");
+                for(std::vector<double>::iterator it = py.begin(); it != py.end(); ++it) {
+                    output_ofs << *it << std::endl;
                 }
             }
         }
