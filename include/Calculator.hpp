@@ -72,19 +72,29 @@ namespace libshorttext {
         }
     }
 
-    std::vector<int> text2tok(std::string text, char sep)
+    std::vector<std::string> text2tok(std::string text, char sep)
     {
-        std::vector<int> id;
+        std::vector<std::string> v;
 		std::stringstream ss;
 		ss.str(text);
 		std::string item;
 		while (std::getline(ss, item, sep)) {
-            if (tok2idx.end() != tok2idx.find(item)) {
-                id.push_back(tok2idx[item]);
+            v.push_back(item);
+        }
+
+        return v;
+    }
+
+    std::vector<int> tok2index(std::vector<std::string> tokens)
+    {
+        std::vector<int> id;
+        for(std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+            if (tok2idx.end() != tok2idx.find(*it)) {
+                id.push_back(tok2idx[*it]);
             }
             // todo
             // ignore unseen token in train
-		}
+        }
 
         return id;
     }
@@ -183,12 +193,11 @@ namespace libshorttext {
         }
     }
 
-	double liblinear_predict(std::string text, char sep)
+	double liblinear_predict(std::vector<std::string> tokens)
     {
 		double predict_label;
-        // predict_label = predict(model_, liblinear_svm2feat(text.c_str()));
-        std::vector<int> tokens = text2tok(text, sep);
-        std::map<int,int> feats = tok2feat(tokens);
+        std::vector<int> tokidxs = tok2index(tokens);
+        std::map<int,int> feats = tok2feat(tokidxs);
         predict_label = predict(model_, feat2node(feats));
 
         return predict_label;

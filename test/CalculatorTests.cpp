@@ -34,12 +34,12 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 // std::string text = "Jewelry & Watches	multicolor inlay sterling silver post earrings jewelry";
                 std::string text = "multicolor inlay sterling silver post earrings jewelry";
                 char sep = ' ';
-                std::vector<int> tokens = text2tok(text, sep);
-                for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+                std::vector<int> tokidxs = tok2index(text2tok(text, sep));
+                for(std::vector<int>::iterator it = tokidxs.begin(); it != tokidxs.end(); ++it) {
                     std::cout << *it << std::endl;
                 }
 
-                std::map<int,int> feats = tok2feat(tokens);
+                std::map<int,int> feats = tok2feat(tokidxs);
                 for(std::map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
                     std::cout << it->first << " => " << it->second << std::endl;
                 }
@@ -48,13 +48,13 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
                 // liblinear
                 liblinear_load_model("../../test/stub/train_file.model/learner/liblinear_model");
 
-                // std::ifstream test_ifs("../../test/stub/test_file.svm");
                 std::ifstream test_ifs("../../test/stub/test_file.text");
                 std::string line;
                 std::vector<double> py;
                 sep = ' ';
                 while (std::getline(test_ifs, line)) {
-                    py.push_back(liblinear_predict(line, sep));
+                    std::vector<std::string> tokens = text2tok(line, sep);
+                    py.push_back(liblinear_predict(tokens));
                 }
 
                 liblinear_destroy_model();
