@@ -41,13 +41,10 @@ int main()
     liblinear::ll_load_model(model_path + "/liblinear_model");
 
     std::ifstream test_ifs("../../test/stub/test_file.text");
-    string line;
-    vector<string> py;
+    string text = "multicolor inlay sterling silver post earrings jewelry";
     char sep = ' ';
-    while (std::getline(test_ifs, line)) {
-        vector<string> tokens = lst_text2tok(line, sep);
-        py.push_back(lst_predict(tokens));
-    }
+    vector<string> tokens = lst_text2tok(text, sep);
+    predict_label = lst_predict(tokens);
 
     liblinear::ll_destroy_model();
 }

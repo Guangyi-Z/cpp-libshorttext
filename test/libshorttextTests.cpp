@@ -46,6 +46,34 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
         THEN( "version" ) {
             REQUIRE( liblinear::ll_get_version() == 211 );
         }
+        THEN( "solver" ) {
+            /*
+             * LibShortText
+                -L {0|1|2|3}	Classifier. (default 0)
+                    0: support vector classification by Crammer and Singer
+                    1: L1-loss support vector classification
+                    2: L2-loss support vector classification
+                    3: logistic regression
+             * LibLinear
+                -s type : set type of solver (default 1)
+                for multi-class classification
+                    0 -- L2-regularized logistic regression (primal)
+                    1 -- L2-regularized L2-loss support vector classification (dual)
+                    2 -- L2-regularized L2-loss support vector classification (primal)
+                    3 -- L2-regularized L1-loss support vector classification (dual)
+                    4 -- support vector classification by Crammer and Singer
+                    5 -- L1-regularized L2-loss support vector classification
+                    6 -- L1-regularized logistic regression
+                    7 -- L2-regularized logistic regression (dual)
+                for regression
+                    11 -- L2-regularized L2-loss support vector regression (primal)
+                    12 -- L2-regularized L2-loss support vector regression (dual)
+                    13 -- L2-regularized L1-loss support vector regression (dual)
+             */
+            string model_path = "../../test/stub/train_file.model_converted";
+            liblinear::ll_load_model(model_path + "/liblinear_model");
+            REQUIRE( liblinear::ll_get_solver_type() == 4 );
+        }
         THEN( "predict" ) {
             string model_path = "../../test/stub/train_file.model_converted";
             lst_destroy_model();

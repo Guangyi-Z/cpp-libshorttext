@@ -25,6 +25,7 @@ using liblinear::max_nr_attr;
 namespace libshorttext {
 
     // options
+    // liblinear_ops doesn't get used in predicting, see `predict()` in `learner_impl.py` in LibShortText
     string learner_ops, liblinear_ops;
     int is_binary = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
 
