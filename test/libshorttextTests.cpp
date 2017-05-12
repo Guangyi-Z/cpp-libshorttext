@@ -100,7 +100,7 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             REQUIRE(y.size() == py.size());
 
             int n = 0;
-            for(int i = 0; i<py.size(); i++) {
+            for(size_t i = 0; i<py.size(); i++) {
                 n += py[i] == y[i]? 1 : 0;
             }
             REQUIRE(n == py.size());

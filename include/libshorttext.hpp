@@ -263,8 +263,7 @@ namespace libshorttext {
             x = (struct feature_node *) malloc(max_nr_attr*sizeof(struct feature_node));
         }
 
-        int nr_class=get_nr_class(model_);
-        int j, n;
+        int n;
         int nr_feature=get_nr_feature(model_);
         if(model_->bias>=0)
             n=nr_feature+1;
@@ -272,9 +271,6 @@ namespace libshorttext {
             n=nr_feature;
 
         int i = 0;
-        double target_label;
-        char *idx, *val, *label, *endptr;
-        int inst_max_index = 0; // strtol gives 0 if wrong format
 
         for(map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
             if(i>=max_nr_attr-2)    // need one more for index = -1
