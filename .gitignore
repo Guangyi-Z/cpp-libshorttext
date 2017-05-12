@@ -2,7 +2,6 @@
 **/*.a
 **/*.so
 **/*.so.*
-**/*.pickle
 
 build/
 lib/
