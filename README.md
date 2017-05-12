@@ -16,11 +16,41 @@ Then open a terminal, go to the source directory and type the following commands
     $ cmake ..
     $ make
 
-## Converting the model file from LibShortText (Python)
+## Usage
+
+### Converting the model file from LibShortText (Python)
 
 ```bash
 python model_converter.py test/stub/train_file.model
 # test/stub/train_file.model => test/stub/train_file.model_converted
+```
+
+### Predicting
+
+```c++
+#include "libshorttext.hpp"
+
+using namespace libshorttext;
+
+int main()
+{
+    string model_path = "../../test/stub/train_file.model_converted";
+    lst_destroy_model();
+    lst_load_model(model_path);
+
+    liblinear::ll_load_model(model_path + "/liblinear_model");
+
+    std::ifstream test_ifs("../../test/stub/test_file.text");
+    string line;
+    vector<string> py;
+    char sep = ' ';
+    while (std::getline(test_ifs, line)) {
+        vector<string> tokens = lst_text2tok(line, sep);
+        py.push_back(lst_predict(tokens));
+    }
+
+    liblinear::ll_destroy_model();
+}
 ```
 
 ## Running unit tests
@@ -42,7 +72,7 @@ python ../text-predict.py -f test_file train_file.model predict_result
 
 ## Denpendency
 
-* catch
+* [catch](https://github.com/philsquared/Catch)
 * [liblinear](https://github.com/cjlin1/liblinear)
 
 ## Missing
@@ -53,8 +83,8 @@ python ../text-predict.py -f test_file train_file.model predict_result
 
 ## Trial and Error
 
-* [TextGrocery for better understanding of LibShortText](https://github.com/2shou/TextGrocery)
-* [PicklingTools not work](https://github.com/pyloor/picklingtools/issues/4)
+* [TextGrocery for better understanding of the logic LibShortText](https://github.com/2shou/TextGrocery)
+* [PicklingTools not work, so I have to convert the model file by `model_converter.py`](https://github.com/pyloor/picklingtools/issues/4)
 
 ## License
 
