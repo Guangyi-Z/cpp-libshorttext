@@ -107,5 +107,19 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
 
             liblinear::ll_destroy_model();
         }
+        THEN( "predict_one_more" ) {
+            string model_path = "../../test/stub/train_file.model_converted";
+            lst_destroy_model();
+            lst_load_model(model_path);
+
+            liblinear::ll_load_model(model_path + "/liblinear_model");
+
+            string text = "multicolor inlay sterling silver post earrings jewelry";
+            char sep = ' ';
+            vector<string> tokens = lst_text2tok(text, sep);
+            REQUIRE( lst_predict(tokens) == "Jewelry & Watches" );
+
+            liblinear::ll_destroy_model();
+        }
     }
 }

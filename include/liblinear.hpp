@@ -35,7 +35,7 @@ namespace liblinear {
     void ll_destroy_model()
     {
         free_and_destroy_model(&model_);
-        if (x) {
+        if (!x) {
             free(x);
         }
     }
