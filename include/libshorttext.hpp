@@ -10,8 +10,8 @@
 #include <cmath>
 #include "liblinear.hpp"
 
-#define NUM_TO_STR( x ) static_cast< std::ostringstream & >( \
-    ( std::ostringstream() << std::dec << x ) ).str()
+#define NUM_TO_STR( k ) static_cast< std::ostringstream & >( \
+    ( std::ostringstream() << std::dec << k ) ).str()
 
 using std::string;
 using std::stringstream;
@@ -25,14 +25,12 @@ using liblinear::max_nr_attr;
 namespace libshorttext {
 
     // options
-    // liblinear_ops doesn't get used in predicting, see `predict()` in `learner_impl.py` in LibShortText
-    string learner_ops, liblinear_ops;
     int is_binary = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
 
     // libshorttext model variables
-    vector<string> idx2cls;
-    map<string,int> tok2idx;
-    map<string, int> feat2idx;
+    extern vector<string> idx2cls;
+    extern map<string,int> tok2idx;
+    extern map<string, int> feat2idx;
 
     void _parse_options(string ops)
     {
@@ -85,6 +83,8 @@ namespace libshorttext {
         string textprep_path = model_path + "/text_prep.txt";
 
         // options
+        // liblinear_ops doesn't get used in predicting, see `predict()` in `learner_impl.py` in LibShortText
+        string learner_ops, liblinear_ops;
         std::ifstream options_ifs(options_path.c_str());
         std::getline(options_ifs, learner_ops);
         std::getline(options_ifs, liblinear_ops);
