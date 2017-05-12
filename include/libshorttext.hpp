@@ -1,13 +1,6 @@
-#ifndef _CALCULATOR_HPP_
-#define _CALCULATOR_HPP_
+#ifndef _LIBSHORTTEXT_HPP_
+#define _LIBSHORTTEXT_HPP_
 
-// #include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
-#include "linear.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -15,26 +8,23 @@
 #include <map>
 #include <float.h>
 #include <cmath>
+#include "liblinear.hpp"
 
 #define NUM_TO_STR( x ) static_cast< std::ostringstream & >( \
     ( std::ostringstream() << std::dec << x ) ).str()
 
+using liblinear::x;
+using liblinear::model_;
+using liblinear::max_nr_attr;
 
 namespace libshorttext {
 
-    struct model* model_;
     std::string learner_ops, liblinear_ops;
     int is_binary = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
-    struct feature_node *x = NULL;
-    int max_nr_attr = 64;
 
     std::vector<std::string> idx2cls;
     std::map<std::string,int> tok2idx;
     std::map<std::string, int> feat2idx;
-
-    int get_liblinear_version() {
-        return liblinear_version;
-    }
 
     std::string bigram(int l, int r)
     {
@@ -299,37 +289,7 @@ namespace libshorttext {
         return x;
     }
 
-    void liblinear_load_model(std::string model_file)
-    {
-        if((model_=load_model(model_file.c_str()))==0)
-        {
-            fprintf(stderr,"can't open model file %s\n",model_file.c_str());
-            exit(1);
-        }
-
-		// model_->param.solver_type = L2R_L2LOSS_SVC_DUAL
-		// model_->param.eps = DBL_MAX;
-		// model_->param.C = 1
-		// model_->param.p = 0.1
-		// model_->param.nr_weight = 0
-		// model_->param.weight_label = (int*) Malloc(int, 1);
-		// model_->param.weight = (double*) Malloc(double, 1);
-
-		// model_->param.bias = -1
-		// model_->param.cross_validation = False
-		// model_->param.nr_fold = 0
-		// model_->param.print_func = NULL;
-    }
-    void liblinear_destroy_model()
-    {
-        // destroy_param(&(model_->param));
-	    free_and_destroy_model(&model_);
-        if (x) {
-	        free(x);
-        }
-    }
-
-    std::string liblinear_predict(std::vector<std::string> tokens)
+    std::string lst_predict(std::vector<std::string> tokens)
     {
 		double predict_label;
         std::vector<int> tokidxs = tok2index(tokens);
@@ -339,4 +299,4 @@ namespace libshorttext {
         return idx2cls[predict_label];
     }
 }
-#endif // _CALCULATOR_HPP_
+#endif // _LIBSHORTTEXT_HPP_

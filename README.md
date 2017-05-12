@@ -32,6 +32,7 @@ After building this project you may run its unit tests by using these commands:
 
 * Ignoring extra file in model file: `converter/extra_file_ids.pickle` and `converter/extra_nr_feats.pickle`
 * Ignoring `-P`, `-G` options in LibShortText
+* Ignoring TFIDF features
 
 ## Trial and Error
 

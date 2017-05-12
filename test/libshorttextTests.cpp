@@ -1,16 +1,9 @@
 #define CATCH_CONFIG_MAIN  // This tells Catch to provide a main() - only do this in one cpp file
 #include "catch.hpp"
-
-#include "Calculator.hpp"
-#include <unistd.h> // getcwd()
+#include "libshorttext.hpp"
+#include "util.hpp"
 
 using namespace libshorttext;
-
-std::string get_working_path() {
-    const int MAXPATHLEN_ = 2048;
-    char temp[MAXPATHLEN_];
-    return ( getcwd(temp, MAXPATHLEN_) ? std::string( temp ) : std::string("") );
-}
 
 SCENARIO( "Libshorttext", "[libshorttext]" ) {
 
@@ -51,14 +44,14 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
 
     GIVEN( "liblinear" ) {
         THEN( "version" ) {
-            REQUIRE( get_liblinear_version() == 211 );
+            REQUIRE( liblinear::ll_get_version() == 211 );
         }
         THEN( "predict" ) {
             std::string model_path = "../../test/stub/train_file.model_converted";
             clear_model();
             read_model(model_path);
 
-            liblinear_load_model("../../test/stub/train_file.model/learner/liblinear_model");
+            liblinear::ll_load_model("../../test/stub/train_file.model/learner/liblinear_model");
 
             std::ifstream test_ifs("../../test/stub/test_file.text");
             std::string line;
@@ -66,7 +59,7 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             char sep = ' ';
             while (std::getline(test_ifs, line)) {
                 std::vector<std::string> tokens = text2tok(line, sep);
-                py.push_back(liblinear_predict(tokens));
+                py.push_back(lst_predict(tokens));
             }
 
             std::vector<std::string> y;
@@ -84,7 +77,7 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             }
             REQUIRE(n == py.size());
 
-            liblinear_destroy_model();
+            liblinear::ll_destroy_model();
         }
     }
 }
