@@ -9,9 +9,9 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
 
     GIVEN( "libshorttext_converted" ) {
         THEN( "read model and proprecessing" ) {
-            std::string model_path = "../../test/stub/train_file.model_converted";
-            clear_model();
-            read_model(model_path);
+            string model_path = "../../test/stub/train_file.model_converted";
+            lst_destroy_model();
+            lst_load_model(model_path);
 
             REQUIRE( tok2idx[">>dummy<<"] == 0 );
             REQUIRE( tok2idx["calgary"] == 1 );
@@ -20,23 +20,23 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             REQUIRE( feat2idx["1"] == 1 );
             REQUIRE( feat2idx["3877,11069"] == 47244 );
 
-            // std::string text = "Jewelry & Watches	multicolor inlay sterling silver post earrings jewelry";
-            std::string text = "multicolor inlay sterling silver post earrings jewelry";
+            // string text = "Jewelry & Watches	multicolor inlay sterling silver post earrings jewelry";
+            string text = "multicolor inlay sterling silver post earrings jewelry";
             char sep = ' ';
-            std::vector<int> tokidxs = tok2index(text2tok(text, sep));
-            for(std::vector<int>::iterator it = tokidxs.begin(); it != tokidxs.end(); ++it) {
+            vector<int> tokidxs = _tok2index(lst_text2tok(text, sep));
+            for(vector<int>::iterator it = tokidxs.begin(); it != tokidxs.end(); ++it) {
                 std::cout << *it << std::endl;
             }
 
-            std::map<int,int> feats = tok2feat(tokidxs);
-            for(std::map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
+            map<int,int> feats = _tok2feat(tokidxs);
+            for(map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
                 std::cout << it->first << " => " << it->second << std::endl;
             }
         }
         THEN( "text2tok" ) {
-            std::string text = "夏天 是 最好 的季节 一饱眼福";
+            string text = "夏天 是 最好 的季节 一饱眼福";
             char sep = ' ';
-            std::vector<std::string> tokens = text2tok(text, sep);
+            vector<string> tokens = lst_text2tok(text, sep);
             REQUIRE( tokens[0] == "夏天" );
             REQUIRE( tokens[4] == "一饱眼福" );
         }
@@ -47,22 +47,22 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             REQUIRE( liblinear::ll_get_version() == 211 );
         }
         THEN( "predict" ) {
-            std::string model_path = "../../test/stub/train_file.model_converted";
-            clear_model();
-            read_model(model_path);
+            string model_path = "../../test/stub/train_file.model_converted";
+            lst_destroy_model();
+            lst_load_model(model_path);
 
             liblinear::ll_load_model("../../test/stub/train_file.model/learner/liblinear_model");
 
             std::ifstream test_ifs("../../test/stub/test_file.text");
-            std::string line;
-            std::vector<std::string> py;
+            string line;
+            vector<string> py;
             char sep = ' ';
             while (std::getline(test_ifs, line)) {
-                std::vector<std::string> tokens = text2tok(line, sep);
+                vector<string> tokens = lst_text2tok(line, sep);
                 py.push_back(lst_predict(tokens));
             }
 
-            std::vector<std::string> y;
+            vector<string> y;
             // std::ifstream result_ifs("../../test/stub/predict_result");
             std::ifstream result_ifs("../../test/stub/predict_result_py");
             while (std::getline(result_ifs, line)) {

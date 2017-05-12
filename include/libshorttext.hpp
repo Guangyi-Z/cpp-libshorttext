@@ -13,34 +13,30 @@
 #define NUM_TO_STR( x ) static_cast< std::ostringstream & >( \
     ( std::ostringstream() << std::dec << x ) ).str()
 
+using std::string;
+using std::stringstream;
+using std::vector;
+using std::map;
+
 using liblinear::x;
 using liblinear::model_;
 using liblinear::max_nr_attr;
 
 namespace libshorttext {
 
-    std::string learner_ops, liblinear_ops;
+    // options
+    string learner_ops, liblinear_ops;
     int is_binary = 1, is_norm2 = 1, is_tf = 0, is_tfidf = 0;
 
-    std::vector<std::string> idx2cls;
-    std::map<std::string,int> tok2idx;
-    std::map<std::string, int> feat2idx;
+    // libshorttext model variables
+    vector<string> idx2cls;
+    map<string,int> tok2idx;
+    map<string, int> feat2idx;
 
-    std::string bigram(int l, int r)
+    void _parse_options(string ops)
     {
-        return NUM_TO_STR(l) + "," + NUM_TO_STR(r);
-    }
-
-    void clear_model() {
-        idx2cls.clear();
-        tok2idx.clear();
-        feat2idx.clear();
-    }
-
-    void parse_options(std::string ops)
-    {
-        std::stringstream ss(ops);
-        std::string op;
+        stringstream ss(ops);
+        string op;
         int val;
         while(ss >> op >> val) {
             std::cout << op + " " << val << std::endl;
@@ -69,42 +65,54 @@ namespace libshorttext {
         }
     }
 
-    void read_model(std::string model_path) {
-        std::string classmap_path = model_path + "/class_map.txt";
-        std::string featgen_path = model_path + "/feat_gen.txt";
-        std::string textprep_path = model_path + "/text_prep.txt";
-        std::string options_path = model_path + "/options.txt";
+    string _bigram(int l, int r)
+    {
+        return NUM_TO_STR(l) + "," + NUM_TO_STR(r);
+    }
+
+    void lst_destroy_model()
+    {
+        idx2cls.clear();
+        tok2idx.clear();
+        feat2idx.clear();
+    }
+
+    void lst_load_model(string model_path) {
+        string classmap_path = model_path + "/class_map.txt";
+        string featgen_path = model_path + "/feat_gen.txt";
+        string textprep_path = model_path + "/text_prep.txt";
+        string options_path = model_path + "/options.txt";
 
         std::ifstream options_ifs(options_path.c_str());
         std::getline(options_ifs, learner_ops);
         std::getline(options_ifs, liblinear_ops);
         std::cout<< "options: " << learner_ops+"; "+liblinear_ops << std::endl;
-        parse_options(learner_ops);
+        _parse_options(learner_ops);
 
         std::ifstream classmap_ifs(classmap_path.c_str());
-        std::string cls;
+        string cls;
         while (std::getline(classmap_ifs, cls)) {
             idx2cls.push_back(cls);
         }
 
         std::ifstream textprep_ifs(textprep_path.c_str());
-        std::string token;
+        string token;
         int idx2tok = 0;
         while (std::getline(textprep_ifs, token)) {
             tok2idx[token] = idx2tok ++;
         }
 
         std::ifstream featgen_ifs(featgen_path.c_str());
-        std::string ngram;
+        string ngram;
         int idx2feat = 0;
         while (std::getline(featgen_ifs, ngram)) {
-            std::string::size_type idx = ngram.find('\t');
-            if (idx != std::string::npos) {
+            string::size_type idx = ngram.find('\t');
+            if (idx != string::npos) {
                 // bigram
-                std::stringstream ss(ngram);
+                stringstream ss(ngram);
                 int l,r;
                 ss >> l >> r;
-                feat2idx[bigram(l,r)] = idx2feat;
+                feat2idx[_bigram(l,r)] = idx2feat;
             }
             else {
                 // unigram
@@ -115,12 +123,12 @@ namespace libshorttext {
         }
     }
 
-    std::vector<std::string> text2tok(std::string text, char sep)
+    vector<string> lst_text2tok(string text, char sep)
     {
-        std::vector<std::string> v;
-		std::stringstream ss;
+        vector<string> v;
+		stringstream ss;
 		ss.str(text);
-		std::string item;
+		string item;
 		while (std::getline(ss, item, sep)) {
             v.push_back(item);
         }
@@ -128,10 +136,10 @@ namespace libshorttext {
         return v;
     }
 
-    std::vector<int> tok2index(std::vector<std::string> tokens)
+    vector<int> _tok2index(vector<string> tokens)
     {
-        std::vector<int> id;
-        for(std::vector<std::string>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        vector<int> id;
+        for(vector<string>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
             if (tok2idx.end() != tok2idx.find(*it)) {
                 id.push_back(tok2idx[*it]);
             }
@@ -142,12 +150,12 @@ namespace libshorttext {
         return id;
     }
 
-    std::map<int,int> tok2feat(std::vector<int> tokens)
+    map<int,int> _tok2feat(vector<int> tokens)
     {
-        std::map<int,int> feat;
+        map<int,int> feat;
         // unigram
-        for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
-            std::string ft = NUM_TO_STR(*it);
+        for(vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+            string ft = NUM_TO_STR(*it);
             if (feat2idx.end() != feat2idx.find(ft)) {
                 int id = feat2idx[ft];
                 if (feat.end() != feat.find(id)) {
@@ -159,9 +167,9 @@ namespace libshorttext {
             }
         }
         // bigram
-        for(std::vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
+        for(vector<int>::iterator it = tokens.begin(); it != tokens.end(); ++it) {
             if (it+1 >= tokens.end()) break;
-            std::string ft = bigram(*it, *(it+1));
+            string ft = _bigram(*it, *(it+1));
             if (feat2idx.end() != feat2idx.find(ft)) {
                 int id = feat2idx[ft];
                 if (feat.end() != feat.find(id)) {
@@ -176,8 +184,8 @@ namespace libshorttext {
         return feat;
     }
 
-    // void normalize(struct feature_node* x, int binary, int norm, int tf, int idf, double* idf_val)
-    void normalize(struct feature_node* x)
+    // void _normalize(struct feature_node* x, int binary, int norm, int tf, int idf, double* idf_val)
+    void _normalize(struct feature_node* x)
     {
         struct feature_node* xi;
 
@@ -243,7 +251,7 @@ namespace libshorttext {
         }
     }
 
-    struct feature_node* feat2node(std::map<int,int> feats)
+    struct feature_node* _feat2node(map<int,int> feats)
     {
         if (!x) {
             x = (struct feature_node *) malloc(max_nr_attr*sizeof(struct feature_node));
@@ -262,7 +270,7 @@ namespace libshorttext {
 		char *idx, *val, *label, *endptr;
 		int inst_max_index = 0; // strtol gives 0 if wrong format
 
-        for(std::map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
+        for(map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
 			if(i>=max_nr_attr-2)	// need one more for index = -1
 			{
 				max_nr_attr *= 2;
@@ -284,17 +292,17 @@ namespace libshorttext {
 		}
 		x[i].index = -1;
 
-        normalize(x);
+        _normalize(x);
 
         return x;
     }
 
-    std::string lst_predict(std::vector<std::string> tokens)
+    string lst_predict(vector<string> tokens)
     {
 		double predict_label;
-        std::vector<int> tokidxs = tok2index(tokens);
-        std::map<int,int> feats = tok2feat(tokidxs);
-        predict_label = predict(model_, feat2node(feats));
+        vector<int> tokidxs = _tok2index(tokens);
+        map<int,int> feats = _tok2feat(tokidxs);
+        predict_label = predict(model_, _feat2node(feats));
 
         return idx2cls[predict_label];
     }

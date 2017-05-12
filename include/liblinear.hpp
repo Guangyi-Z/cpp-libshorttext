@@ -1,11 +1,11 @@
 #ifndef _LIBLINEAR_HPP_
 #define _LIBLINEAR_HPP_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <errno.h>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <cctype>
+#include <cerrno>
 #include "linear.h"
 
 namespace liblinear {
@@ -14,7 +14,8 @@ namespace liblinear {
     struct feature_node *x = NULL;
     int max_nr_attr = 64;
 
-    int ll_get_version() {
+    int ll_get_version()
+    {
         return liblinear_version;
     }
 

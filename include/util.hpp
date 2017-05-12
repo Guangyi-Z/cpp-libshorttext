@@ -2,6 +2,7 @@
 #define _UTIL_HPP_
 
 #include <unistd.h> // getcwd()
+#include <string>
 
 std::string get_working_path() {
     const int MAXPATHLEN_ = 2048;
