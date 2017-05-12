@@ -3,7 +3,7 @@
 LibShortText: A Library for Short-text Classification and Analysis, in Pure C++.
 
 * Only for predicting part
-* LibShortText (Python) model files adapted
+* [LibShortText](https://www.csie.ntu.edu.tw/~cjlin/libshorttext/) (Python) model files adapted
 
 ## Building From Source
 
@@ -18,11 +18,21 @@ Then open a terminal, go to the source directory and type the following commands
 
 ## Usage
 
-### Converting the model file from LibShortText (Python)
+### Model Converter
+
+Convert the model file from LibShortText (Python) into the one we use in cpp-libshorttext.
 
 ```bash
-python model_converter.py test/stub/train_file.model
 # test/stub/train_file.model => test/stub/train_file.model_converted
+$ python model_converter.py test/stub/train_file.model
+
+$ tree test/stub/train_file.model_converted
+test/stub/train_file.model_converted
+├── class_map.txt
+├── feat_gen.txt
+├── liblinear_model
+├── options.txt
+└── text_prep.txt
 ```
 
 ### Predicting
@@ -34,18 +44,22 @@ using namespace libshorttext;
 
 int main()
 {
+    // init LibShortText
     string model_path = "../../test/stub/train_file.model_converted";
-    lst_destroy_model();
     lst_load_model(model_path);
 
+    // init LibLinear
     liblinear::ll_load_model(model_path + "/liblinear_model");
 
-    std::ifstream test_ifs("../../test/stub/test_file.text");
+    // ************
+    // predict
     string text = "multicolor inlay sterling silver post earrings jewelry";
     char sep = ' ';
     vector<string> tokens = lst_text2tok(text, sep);
     predict_label = lst_predict(tokens);
+    // ************
 
+    // free allocatd memory
     liblinear::ll_destroy_model();
 }
 ```
@@ -76,7 +90,7 @@ python ../text-predict.py -f test_file train_file.model predict_result
 
 * Ignoring extra file in model file: `converter/extra_file_ids.pickle` and `converter/extra_nr_feats.pickle`
 * Ignoring `-P`, `-G` options in LibShortText
-* Ignoring TFIDF features
+* Ignoring IDF feature
 
 ## Trial and Error
 
