@@ -19,6 +19,7 @@ if __name__ == '__main__':
         sys.exit(1)
     model_path = sys.argv[1]
 
+    # make dst dir
     model_dirname = os.path.basename(model_path)
     model_dirname2 = model_dirname + '_converted'
     model_path2 = os.path.join(
@@ -27,6 +28,8 @@ if __name__ == '__main__':
     if os.path.exists(model_path2):
         shutil.rmtree(model_path2)
     os.makedirs(model_path2)
+
+    shutil.copyfile(os.path.join(model_path, 'learner/liblinear_model'), os.path.join(model_path2, 'liblinear_model'))
 
     options = pk_load(os.path.join(model_path, 'learner/options.pickle'))
     print(options)

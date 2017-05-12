@@ -16,12 +16,29 @@ Then open a terminal, go to the source directory and type the following commands
     $ cmake ..
     $ make
 
+## Converting the model file from LibShortText (Python)
+
+```bash
+python model_converter.py test/stub/train_file.model
+# test/stub/train_file.model => test/stub/train_file.model_converted
+```
+
 ## Running unit tests
 
 After building this project you may run its unit tests by using these commands:
 
     $ make test  # To run all tests via CTest
     $ make catch # Run all tests directly, showing more details to you
+
+### About testing stub
+
+Download [LibShortText](https://www.csie.ntu.edu.tw/~cjlin/libshorttext/) zip file, and cd `demo` directory.
+Execute the following commands, and you will obtain the benchmark data.
+
+```bash
+python ../text-train.py -P 0 -G 1 -F 1 -N 0 -L 3 -f train_file
+python ../text-predict.py -f test_file train_file.model predict_result
+```
 
 ## Denpendency
 

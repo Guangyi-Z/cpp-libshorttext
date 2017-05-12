@@ -51,7 +51,7 @@ SCENARIO( "Libshorttext", "[libshorttext]" ) {
             lst_destroy_model();
             lst_load_model(model_path);
 
-            liblinear::ll_load_model("../../test/stub/train_file.model/learner/liblinear_model");
+            liblinear::ll_load_model(model_path + "/liblinear_model");
 
             std::ifstream test_ifs("../../test/stub/test_file.text");
             string line;

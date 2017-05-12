@@ -27,25 +27,26 @@ namespace liblinear {
             exit(1);
         }
 
-		// model_->param.solver_type = L2R_L2LOSS_SVC_DUAL
-		// model_->param.eps = DBL_MAX;
-		// model_->param.C = 1
-		// model_->param.p = 0.1
-		// model_->param.nr_weight = 0
-		// model_->param.weight_label = (int*) Malloc(int, 1);
-		// model_->param.weight = (double*) Malloc(double, 1);
+        // todo
+        // model_->param.solver_type = L2R_L2LOSS_SVC_DUAL
+        // model_->param.eps = DBL_MAX;
+        // model_->param.C = 1
+        // model_->param.p = 0.1
+        // model_->param.nr_weight = 0
+        // model_->param.weight_label = (int*) Malloc(int, 1);
+        // model_->param.weight = (double*) Malloc(double, 1);
 
-		// model_->param.bias = -1
-		// model_->param.cross_validation = False
-		// model_->param.nr_fold = 0
-		// model_->param.print_func = NULL;
+        // model_->param.bias = -1
+        // model_->param.cross_validation = False
+        // model_->param.nr_fold = 0
+        // model_->param.print_func = NULL;
     }
     void ll_destroy_model()
     {
         // destroy_param(&(model_->param));
-	    free_and_destroy_model(&model_);
+        free_and_destroy_model(&model_);
         if (x) {
-	        free(x);
+            free(x);
         }
     }
 }

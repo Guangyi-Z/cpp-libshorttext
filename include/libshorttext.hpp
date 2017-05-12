@@ -6,7 +6,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
-#include <float.h>
+#include <cfloat>
 #include <cmath>
 #include "liblinear.hpp"
 
@@ -78,35 +78,32 @@ namespace libshorttext {
     }
 
     void lst_load_model(string model_path) {
+        string options_path = model_path + "/options.txt";
         string classmap_path = model_path + "/class_map.txt";
         string featgen_path = model_path + "/feat_gen.txt";
         string textprep_path = model_path + "/text_prep.txt";
-        string options_path = model_path + "/options.txt";
 
+        // options
         std::ifstream options_ifs(options_path.c_str());
         std::getline(options_ifs, learner_ops);
         std::getline(options_ifs, liblinear_ops);
         std::cout<< "options: " << learner_ops+"; "+liblinear_ops << std::endl;
         _parse_options(learner_ops);
 
+        // class mapping
         std::ifstream classmap_ifs(classmap_path.c_str());
         string cls;
         while (std::getline(classmap_ifs, cls)) {
             idx2cls.push_back(cls);
         }
 
-        std::ifstream textprep_ifs(textprep_path.c_str());
-        string token;
-        int idx2tok = 0;
-        while (std::getline(textprep_ifs, token)) {
-            tok2idx[token] = idx2tok ++;
-        }
-
+        // features generation
         std::ifstream featgen_ifs(featgen_path.c_str());
         string ngram;
         int idx2feat = 0;
         while (std::getline(featgen_ifs, ngram)) {
             string::size_type idx = ngram.find('\t');
+
             if (idx != string::npos) {
                 // bigram
                 stringstream ss(ngram);
@@ -121,15 +118,23 @@ namespace libshorttext {
 
             idx2feat ++;
         }
+
+        // text preprocessing
+        std::ifstream textprep_ifs(textprep_path.c_str());
+        string token;
+        int idx2tok = 0;
+        while (std::getline(textprep_ifs, token)) {
+            tok2idx[token] = idx2tok ++;
+        }
     }
 
     vector<string> lst_text2tok(string text, char sep)
     {
         vector<string> v;
-		stringstream ss;
-		ss.str(text);
-		string item;
-		while (std::getline(ss, item, sep)) {
+        stringstream ss;
+        ss.str(text);
+        string item;
+        while (std::getline(ss, item, sep)) {
             v.push_back(item);
         }
 
@@ -266,31 +271,31 @@ namespace libshorttext {
             n=nr_feature;
 
         int i = 0;
-		double target_label;
-		char *idx, *val, *label, *endptr;
-		int inst_max_index = 0; // strtol gives 0 if wrong format
+        double target_label;
+        char *idx, *val, *label, *endptr;
+        int inst_max_index = 0; // strtol gives 0 if wrong format
 
         for(map<int,int>::iterator it = feats.begin(); it != feats.end(); ++it) {
-			if(i>=max_nr_attr-2)	// need one more for index = -1
-			{
-				max_nr_attr *= 2;
-				x = (struct feature_node *) realloc(x,max_nr_attr*sizeof(struct feature_node));
-			}
-			x[i].index = it->first;
-			x[i].value = it->second;
+            if(i>=max_nr_attr-2)    // need one more for index = -1
+            {
+                max_nr_attr *= 2;
+                x = (struct feature_node *) realloc(x,max_nr_attr*sizeof(struct feature_node));
+            }
+            x[i].index = it->first;
+            x[i].value = it->second;
 
-			// feature indices larger than those in training are not used
-			if(x[i].index <= nr_feature)
+            // feature indices larger than those in training are not used
+            if(x[i].index <= nr_feature)
                 i++;
-		}
+        }
 
-		if(model_->bias>=0)
-		{
-			x[i].index = n;
-			x[i].value = model_->bias;
-			i++;
-		}
-		x[i].index = -1;
+        if(model_->bias>=0)
+        {
+            x[i].index = n;
+            x[i].value = model_->bias;
+            i++;
+        }
+        x[i].index = -1;
 
         _normalize(x);
 
@@ -299,7 +304,7 @@ namespace libshorttext {
 
     string lst_predict(vector<string> tokens)
     {
-		double predict_label;
+        double predict_label;
         vector<int> tokidxs = _tok2index(tokens);
         map<int,int> feats = _tok2feat(tokidxs);
         predict_label = predict(model_, _feat2node(feats));
