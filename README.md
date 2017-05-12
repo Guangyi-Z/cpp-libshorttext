@@ -1,6 +1,6 @@
 # cpp-libshorttext
 
-LibShortText: A Library for Short-text Classification and Analysis, in Pure C++.
+LibShortText: A Library for Short-text Classification and Analysis, Migrated in Pure C++.
 
 * Only for predicting part
 * [LibShortText](https://www.csie.ntu.edu.tw/~cjlin/libshorttext/) (Python) model files adapted
@@ -86,13 +86,13 @@ python ../text-predict.py -f test_file train_file.model predict_result
 * [catch](https://github.com/philsquared/Catch)
 * [liblinear](https://github.com/cjlin1/liblinear)
 
-## Missing
+## What is missing
 
 * Ignoring extra file in model file: `converter/extra_file_ids.pickle` and `converter/extra_nr_feats.pickle`
-* Ignoring `-P`, `-G` options in LibShortText
+* Ignoring `-P`, `-G` options in LibShortText, i.e., use unigram & bigram.
 * Ignoring IDF feature
 
-## Trial and Error
+## Trial and error
 
 * [TextGrocery for better understanding of the logic LibShortText](https://github.com/2shou/TextGrocery)
 * [PicklingTools not work, so I have to convert the model file by `model_converter.py`](https://github.com/pyloor/picklingtools/issues/4)
